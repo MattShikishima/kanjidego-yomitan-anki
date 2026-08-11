@@ -10,3 +10,11 @@ export function removeFromEnd(str: string, stringsToRemove: string[]): string {
   }
   return str;
 }
+
+/**
+ * Collapses runs of whitespace (including stray tabs/newlines from the wiki
+ * markup) into single spaces and trims the result.
+ */
+export function normalizeWhitespace(str: string): string {
+  return str.replace(/\s+/g, ' ').trim();
+}

@@ -2,6 +2,7 @@ import {
   EXPORT_DIRECTORY,
   KANJI_DE_GO_NAME,
   CROPPED_IMG_DIR,
+  WIKI_ATTRIBUTION_URL,
 } from '../constants';
 import { Dictionary, TermEntry } from 'yomichan-dict-builder';
 import { TermData } from '../types';
@@ -21,27 +22,32 @@ export async function buildDictionary(termDataArr: TermData[]) {
     title: `漢字でGo! [${dateString}]`,
     author: 'Marv',
     attribution: `https://formidi.github.io/KanzideGoFAQ/
-https://w.atwiki.jp/kanjidego/`,
+${WIKI_ATTRIBUTION_URL}`,
     description: `From the Kanji de Go! unofficial wiki.
 Built with https://github.com/MarvNC/yomichan-dict-builder`,
     revision: dateString,
     url: 'https://github.com/MarvNC/kanjidego-yomitan-anki',
   });
 
-  const addImagesPromise = addAllImagesToDictionary(dictionary);
+  await addAllImagesToDictionary(dictionary);
 
+  // addTerm must be awaited: it flushes the term bank to the zip once it reaches
+  // termBankMaxSize (10,000), and without awaiting, that reset never runs between
+  // synchronous iterations, so every later addTerm re-serialises the whole
+  // ever-growing term bank and the build runs out of memory.
   for (const termData of termDataArr) {
-    addTermToDictionary(termData, dictionary);
+    await addTermToDictionary(termData, dictionary);
   }
-
-  await addImagesPromise;
 
   const exportDir = path.join(process.cwd(), EXPORT_DIRECTORY);
   const stats = await dictionary.export(exportDir);
   console.log(`Exported ${stats.termCount} terms to ${exportDir}!`);
 }
 
-function addTermToDictionary(termData: TermData, dictionary: Dictionary) {
+async function addTermToDictionary(
+  termData: TermData,
+  dictionary: Dictionary
+) {
   const { term, reading } = termData.termReading;
   // Some terms have an empty term string because they're too rare
   const termEntry = new TermEntry(term || reading);
@@ -52,7 +58,7 @@ function addTermToDictionary(termData: TermData, dictionary: Dictionary) {
 
   termEntry.setTermTags('漢字でGo!');
 
-  dictionary.addTerm(termEntry.build());
+  await dictionary.addTerm(termEntry.build());
 
   // Deprioritize alternates
   termEntry.setPopularity(-5);
@@ -61,7 +67,7 @@ function addTermToDictionary(termData: TermData, dictionary: Dictionary) {
   if (termData.termInfo.別表記) {
     for (const altTerm of termData.termInfo.別表記) {
       termEntry.setTerm(altTerm);
-      dictionary.addTerm(termEntry.build());
+      await dictionary.addTerm(termEntry.build());
     }
   }
   // Add alternate readings
@@ -72,7 +78,7 @@ function addTermToDictionary(termData: TermData, dictionary: Dictionary) {
       if (term === reading) {
         termEntry.setTerm(altReading);
       }
-      dictionary.addTerm(termEntry.build());
+      await dictionary.addTerm(termEntry.build());
     }
   }
 }
@@ -82,7 +88,12 @@ async function addAllImagesToDictionary(dictionary: Dictionary) {
   const imageFiles = fs.readdirSync(imageDir);
   for (const imageFile of imageFiles) {
     const imageFilePath = path.join(imageDir, imageFile);
-    dictionary.addFile(imageFilePath, `img/${imageFile}`);
+    // The images are already-compressed PNGs, so store them uncompressed instead
+    // of using the export's default DEFLATE. Re-deflating thousands of PNGs only
+    // shrinks the zip by ~3% but makes the in-memory zip build run out of memory.
+    dictionary.zip.file(`img/${imageFile}`, fs.readFileSync(imageFilePath), {
+      compression: 'STORE',
+    });
   }
   console.log(`Added ${imageFiles.length} images to dictionary`);
 }

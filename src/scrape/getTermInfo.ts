@@ -1,175 +1,125 @@
 import {
-  INFO_CATEGORIES,
+  ALL_INPUT_LABELS,
+  INPUT_LABELS,
   END_STRINGS_TO_REMOVE,
   EMPTY_STRING,
 } from '../constants';
-import { InfoCategory, TermInfo } from '../types';
-import { cleanStr } from '../util/textUtils';
-import { removeFromEnd } from '../util/textUtils';
+import { TermInfo } from '../types';
+import { cleanStr, normalizeWhitespace, removeFromEnd } from '../util/textUtils';
+import { mergeLegacyBetsuhyoki } from './legacyBetsuhyoki';
+
+export type LabeledLine = { label: string; value: string };
 
 /**
- * Adds term information to the termInfo object.
+ * Parses a "ラベル：値" line into its label and value.
  *
- * @param ulText - The array of strings containing the term information.
- * @param term - The term to add information for.
- * @param level - The level of the term.
- * @returns The updated termInfo object.
+ * Tolerates a single leading stray character (the wiki markup occasionally
+ * leaves a quote or brace in front of a label) and accepts both the full-width
+ * (：) and half-width (:) colon. Returns null if the line does not start with a
+ * recognised label.
+ */
+export function parseLabeledLine(line: string): LabeledLine | null {
+  // eslint-disable-next-line no-irregular-whitespace
+  const stripped = line.replace(/^[\s　"'“”｛{『「]+/, '');
+  for (const label of ALL_INPUT_LABELS) {
+    for (const offset of [0, 1]) {
+      const rest = stripped.slice(offset);
+      if (rest.startsWith(`${label}：`) || rest.startsWith(`${label}:`)) {
+        return { label, value: rest.slice(label.length + 1).trim() };
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Splits a delimited list value (e.g. "通草、丁翁") into cleaned entries.
+ */
+function splitList(value: string): string[] {
+  return value
+    .split(/[、,，\s]/)
+    .map((item) => cleanStr(item.trim()))
+    .filter(Boolean);
+}
+
+/**
+ * Builds a TermInfo object from a term entry's labeled lines, the extra readings
+ * taken from the header, and the term's problem ID.
+ *
+ * @param lines - The labeled lines of the entry (anchors already removed).
+ * @param extraReadings - Additional readings listed in the header after the first.
+ * @param reading - The primary reading (used to de-duplicate alternate readings).
+ * @param term - The primary term (used to de-duplicate alternate forms).
+ * @param problemId - The problem ID, e.g. "Lv05_0001".
+ * @returns The assembled TermInfo object.
  */
 export function getTermInfo(
-  ulText: string[],
+  lines: string[],
+  extraReadings: string[],
+  reading: string,
   term: string,
-  level: string
+  problemId: string
 ): TermInfo {
-  const termInfo: TermInfo = {};
+  const termInfo: TermInfo = { 問題ID: problemId };
 
-  for (const category of INFO_CATEGORIES) {
-    const line = findLineForCategory(ulText, category);
-    if (line) {
-      const info = extractInfo(line, category);
-      if (isValidInfo(info)) {
-        addCategoryInfo(info, category, term, level, termInfo);
-      }
-    } else {
-      handleMissingCategory(category, term);
+  const altReadings = [...extraReadings];
+  const altForms: string[] = [];
+  const notes: string[] = [];
+
+  for (const line of lines) {
+    const parsed = parseLabeledLine(line);
+    if (!parsed || !parsed.value) continue;
+    const { label, value } = parsed;
+
+    if (label === INPUT_LABELS.meaning) {
+      termInfo.意味 = normalizeWhitespace(value);
+    } else if ((INPUT_LABELS.altReadings as readonly string[]).includes(label)) {
+      altReadings.push(...splitList(value));
+    } else if ((INPUT_LABELS.altForms as readonly string[]).includes(label)) {
+      altForms.push(...splitList(removeFromEnd(value, END_STRINGS_TO_REMOVE)));
+    } else if ((INPUT_LABELS.notes as readonly string[]).includes(label)) {
+      notes.push(normalizeWhitespace(value));
     }
+  }
+
+  const cleanedAltReadings = dedupe(altReadings).filter(
+    (r) => isValidInfo(r) && r !== reading
+  );
+  if (cleanedAltReadings.length > 0) {
+    termInfo.別解 = cleanedAltReadings;
+  }
+
+  // Start from the wiki's 別表記, then supplement with the old deck's alternates.
+  const cleanedAltForms = mergeLegacyBetsuhyoki(
+    term,
+    reading,
+    dedupe(altForms).filter((f) => isValidInfo(f) && f !== term)
+  );
+  if (cleanedAltForms.length > 0) {
+    termInfo.別表記 = cleanedAltForms;
+  }
+
+  const note = notes.filter(Boolean).join('\n');
+  if (note && isValidInfo(note)) {
+    termInfo.追記 = note;
+  }
+
+  // A handful of literary terms give a 元作品 citation (stored as 追記) instead of
+  // a plain 意味, so only warn when an entry has neither.
+  if (!termInfo.意味 && !termInfo.追記) {
+    console.error(`${term || reading} (${problemId}): no 意味 or 追記 found`);
   }
 
   return termInfo;
 }
 
-function lineForCategory(line: string, category: string) {
-  return line.startsWith(category) || line.substring(1).startsWith(category);
+function dedupe(arr: string[]): string[] {
+  return [...new Set(arr)];
 }
 
 /**
- * Finds the line containing the specified category in the given array of lines.
- * @param ulText - The array of lines to search.
- * @param category - The category to find.
- * @returns The line containing the specified category, or undefined if not found.
- */
-function findLineForCategory(
-  ulText: string[],
-  category: string
-): string | undefined {
-  return ulText.find((line) => {
-    return (
-      lineForCategory(line, category) ||
-      (category === '問題ID' &&
-        (lineForCategory(line, '問題') || lineForCategory(line, '問顺ID')))
-    );
-  });
-}
-
-/**
- * Extracts information from a line based on the specified category.
- * Ex. "意味: ～をする人。" -> "～をする人。"
- *
- * @param line - The line containing the information.
- * @param category - The category of the information.
- * @returns The extracted information.
- */
-function extractInfo(line: string, category: string): string {
-  let info = line.slice(category.length + 1).trim();
-  if (category === '別表記') {
-    info = removeFromEnd(info, END_STRINGS_TO_REMOVE);
-  }
-  return info;
-}
-
-/**
- * Checks if the provided info is valid, filtering out なし and etc.
- * @param info - The info to be checked.
- * @returns A boolean indicating whether the info is valid or not.
+ * Checks whether the provided info is valid, filtering out なし and similar.
  */
 function isValidInfo(info: string): boolean {
   return !EMPTY_STRING.includes(info);
-}
-
-/**
- * Adds category information to the termInfo object based on the provided category.
- * @param info - The information to be added.
- * @param category - The category of the information.
- * @param term - The term associated with the information.
- * @param level - The level associated with the term.
- * @param termInfo - The termInfo object to which the information will be added.
- */
-function addCategoryInfo(
-  info: string,
-  category: InfoCategory,
-  term: string,
-  level: string,
-  termInfo: TermInfo
-): void {
-  if (category === '別表記' || category === '別解') {
-    const altArray = processAltInfo(info);
-    if (altArray.length > 0) {
-      termInfo[category] = altArray;
-    }
-  } else if (category === '問題ID') {
-    const problemId = processProblemIdInfo(info, term, level);
-    if (problemId) {
-      termInfo[category] = problemId;
-    }
-  } else {
-    termInfo[category] = info;
-  }
-}
-
-/**
- * Processes the alternative info string and returns an array of cleaned terms.
- *
- * @param info - The alternative info string to process.
- * @returns An array of cleaned terms.
- */
-function processAltInfo(info: string): string[] {
-  const altArray = info
-    .split(/[ 、,，]/)
-    .map((term) => cleanStr(term.trim()))
-    .filter((term) => term && !EMPTY_STRING.includes(term));
-  return altArray;
-}
-
-/**
- * Processes the problem ID info by ensuring it starts with 'Lv' and matches the specified level.
- * If the info does not start with 'Lv', it is prefixed with 'Lv'.
- * If the info does not match the specified level, it is replaced with the specified level.
- *
- * @param info - The problem ID info to process.
- * @param term - The term associated with the problem ID info.
- * @param level - The level to match against the problem ID info.
- * @returns The processed problem ID info.
- */
-function processProblemIdInfo(
-  info: string,
-  term: string,
-  level: string
-): string {
-  if (!info.startsWith('Lv')) {
-    info = `Lv${info}`;
-  }
-
-  const levelRegex = /Lv\d\d/;
-  const levelString = `Lv${level}`;
-
-  if (!info.includes(levelString)) {
-    console.log(
-      `Term ${term} has wrong level ID: ${info}. Changing to ${levelString}`
-    );
-    info = info.replace(levelRegex, levelString);
-  }
-
-  return info;
-}
-
-/**
- * Handles the case when a category is missing for a term.
- * If the category is important, it logs an error message.
- * @param category - The missing category.
- * @param term - The term for which the category is missing.
- */
-function handleMissingCategory(category: string, term: string): void {
-  const importantCategories = ['問題ID', '意味'];
-  if (importantCategories.includes(category)) {
-    console.error(`${term}: Category ${category} not found`);
-  }
 }

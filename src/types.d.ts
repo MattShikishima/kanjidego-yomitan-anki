@@ -21,6 +21,9 @@ export type TermData = {
   termInfo: TermInfo;
   termLevel: string;
   termReference?: TermReference;
+  // The wiki-hosted image, used as a fallback when the game (plicy) image for
+  // this term's ID is unavailable.
+  termImageUrl?: string;
 };
 
 export type CsvRecord = {

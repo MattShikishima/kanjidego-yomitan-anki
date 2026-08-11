@@ -1,0 +1,28 @@
+{
+  "Lv04_0029": {
+    "note": "Wiki テキスト mislabels this as 柑橘類 (the real 柑橘類 is Lv04_0374); the game image is 和同開珎. Full 和同開珎 record was misplaced onto Lv04_0030.",
+    "term": "和同開珎",
+    "reading": "わどうかいちん",
+    "別解": ["わどうかいほう"],
+    "意味": "日本で最初に流通したとされる銭貨。皇朝十二銭の最初に位置づけられるもの。"
+  },
+  "Lv04_0030": {
+    "note": "Wiki mislabels this as 和同開珎 (correct at Lv04_0029); the game image is 魏志倭人伝, which is otherwise missing. 読み方/意味 supplied by hand — verify against the game.",
+    "term": "魏志倭人伝",
+    "reading": "ぎしわじんでん",
+    "別解": [],
+    "意味": "中国の歴史書『三国志』魏書東夷伝倭人条の通称。3世紀頃の倭（日本）について記した現存最古の記録とされる。"
+  },
+  "Lv04_0091": {
+    "note": "テキスト misspells 雛芥子 as 雛罌粟 (the real 雛罌粟 is Lv05_0391), making it a duplicate.",
+    "term": "雛芥子"
+  },
+  "Lv05_0262": {
+    "note": "テキスト misspells 拳螺 as 栄螺 (the real 栄螺 is Lv05_0302), making it a duplicate.",
+    "term": "拳螺"
+  },
+  "Lv05_0429": {
+    "note": "テキスト misspells 通草 as 木通 (the real 木通 is Lv05_0202), making it a duplicate.",
+    "term": "通草"
+  }
+}

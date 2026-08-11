@@ -58,16 +58,11 @@
     "
   >
     {{^元単語}}
-    <!-- Show image if not alt form -->
-    <div style="display: inline-flex; position: relative">
-      <img
-        src="{{問題ID}}_cropped.png"
-        alt=""
-        style="height: 3.5em; object-fit: contain"
-        onmouseover="this.src='{{問題ID}}.png'"
-        onmouseout="this.src='{{問題ID}}_cropped.png'"
-      />
+    <!-- Show image if not alt form: cropped by default, full image on hover -->
+    <div id="quiz-image" style="display: inline-flex; position: relative">
+      {{切り抜き画像}}
     </div>
+    <div id="quiz-image-full" style="display: none">{{画像}}</div>
 
     <!-- Main form hid on front by default -->
     <div id="main-form" style="display: none; font-size: 2em; color: gray">
@@ -147,4 +142,21 @@
       element.style.zIndex = -5;
     }, duration);
   }
+
+  // Size the quiz image (from the 切り抜き画像 field) and swap to the full image
+  // (the 画像 field) on hover.
+  (() => {
+    const quizImage = document.getElementById('quiz-image');
+    const cropped = quizImage && quizImage.querySelector('img');
+    if (!cropped) return;
+    cropped.style.height = '3.5em';
+    cropped.style.objectFit = 'contain';
+    const fullHolder = document.getElementById('quiz-image-full');
+    const full = fullHolder && fullHolder.querySelector('img');
+    if (!full) return;
+    const croppedSrc = cropped.getAttribute('src');
+    const fullSrc = full.getAttribute('src');
+    cropped.addEventListener('mouseover', () => cropped.setAttribute('src', fullSrc));
+    cropped.addEventListener('mouseout', () => cropped.setAttribute('src', croppedSrc));
+  })();
 </script>

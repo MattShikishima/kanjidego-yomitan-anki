@@ -1,4 +1,9 @@
-import { CROPPED_IMAGE_NAME, CROPPED_IMG_DIR } from '../constants';
+import {
+  CROPPED_IMAGE_NAME,
+  CROPPED_IMG_DIR,
+  WIKI_DISPLAY_NAME,
+  WIKI_SEARCH_URL,
+} from '../constants';
 import { TermData } from '../types';
 import {
   DetailedDefinition,
@@ -28,8 +33,8 @@ function addReferences(scArray: StructuredContent[], termData: TermData) {
   if (問題ID) {
     attributionSCArray.push({
       tag: 'a',
-      href: `https://w.atwiki.jp/kanjidego/search?andor=and&keyword=${問題ID}`,
-      content: '漢字でGO!@ウィキ',
+      href: WIKI_SEARCH_URL(問題ID),
+      content: WIKI_DISPLAY_NAME,
     });
   }
   const { termReference } = termData;

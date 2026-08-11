@@ -1,9 +1,12 @@
 import { CsvRecord, TermData } from '../types';
 import path from 'path';
+import fs from 'fs';
 import { createObjectCsvWriter } from 'csv-writer';
 import {
   CROPPED_IMAGE_NAME,
+  CROPPED_IMG_DIR,
   EXPORT_DIRECTORY,
+  IMAGES_DIRECTORY,
   IMAGE_NAME,
   KANJI_DE_GO_NAME,
 } from '../constants';
@@ -131,8 +134,8 @@ function getRecordsForTerm(termData: TermData) {
     典拠: termReference?.text || '',
     典拠リンク: termReference?.url || '',
     レベル: level,
-    画像: 問題ID ? `<img src="${IMAGE_NAME(問題ID)}">` : '',
-    切り抜き画像: 問題ID ? `<img src="${CROPPED_IMAGE_NAME(問題ID)}">` : '',
+    画像: imageTag(問題ID, IMAGES_DIRECTORY, IMAGE_NAME),
+    切り抜き画像: imageTag(問題ID, CROPPED_IMG_DIR, CROPPED_IMAGE_NAME),
     Tags: tags,
   };
 
@@ -157,4 +160,19 @@ function getRecordsForTerm(termData: TermData) {
     });
   }
   return records;
+}
+
+/**
+ * Builds an <img> tag for a term's image, but only if the file actually exists —
+ * some terms have no image, and referencing a missing file breaks deck packaging.
+ */
+function imageTag(
+  問題ID: string | undefined,
+  directory: string,
+  fileName: (id: string) => string
+): string {
+  if (!問題ID) return '';
+  const name = fileName(問題ID);
+  const filePath = path.join(process.cwd(), directory, name);
+  return fs.existsSync(filePath) ? `<img src="${name}">` : '';
 }
