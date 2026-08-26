@@ -42,3 +42,7 @@ npm run makeAnki      # build the Anki deck CSV
 ```
 
 Output is written to `export/`.
+
+## Downloads
+
+https://github.com/MattShikishima/kanjidego-yomitan-anki/releases
