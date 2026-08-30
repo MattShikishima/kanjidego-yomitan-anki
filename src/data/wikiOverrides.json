@@ -17,6 +17,10 @@
     "note": "テキスト misspells 雛芥子 as 雛罌粟 (the real 雛罌粟 is Lv05_0391), making it a duplicate.",
     "term": "雛芥子"
   },
+  "Lv04_1434": {
+    "note": "Wiki 読み方 for 怒濤の is とどうの; the correct reading is どとうの.",
+    "reading": "どとうの"
+  },
   "Lv05_0262": {
     "note": "テキスト misspells 拳螺 as 栄螺 (the real 栄螺 is Lv05_0302), making it a duplicate.",
     "term": "拳螺"
@@ -24,5 +28,13 @@
   "Lv05_0429": {
     "note": "テキスト misspells 通草 as 木通 (the real 木通 is Lv05_0202), making it a duplicate.",
     "term": "通草"
+  },
+  "Lv05_0638": {
+    "note": "Wiki 読み方 for 牙籌を執る is がとうをとる; the correct reading is がちゅうをとる.",
+    "reading": "がちゅうをとる"
+  },
+  "Lv05_0662": {
+    "note": "Wiki 読み方 for 均霑化 is きんていか; the correct reading is きんてんか.",
+    "reading": "きんてんか"
   }
 }
