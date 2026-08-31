@@ -32,16 +32,25 @@ README only covers what this fork changes.
   replaced with the IDS so distinct characters don't collapse into one entry.
 - **Wiki error corrections.** A small set of known wiki mistakes (mislabelled or
   misspelled entries) are patched via an overrides file.
+- **Direct .apkg build.** `npm run makeAnki` now builds a ready-to-import
+  `.apkg` alongside the CSV, with notes split into per-level subdecks plus a
+  single 別表記 subdeck for every alt-spelling card, matching the note type in
+  `src/anki/`.
+- **Jigmo instead of Simsun.** The card CSS pulled in Simsun/SimsunB (Microsoft-
+  licensed fonts) as a rare-kanji fallback; the `.apkg` now embeds
+  [Jigmo](https://kamichikoichi.github.io/jigmo/) instead — CC0, and built
+  specifically for this project's kind of extremely rare/unencoded kanji.
 
 ## Building
 
 ```sh
 npm install
 npm run makeYomitan   # build the Yomitan dictionary
-npm run makeAnki      # build the Anki deck CSV
+npm run makeAnki      # build the Anki deck CSV + .apkg
 ```
 
-Output is written to `export/`.
+Output is written to `export/`. The first `makeAnki` run downloads the Jigmo
+fonts (~65MB, cached under `fonts/`) for the `.apkg`.
 
 ## Downloads
 

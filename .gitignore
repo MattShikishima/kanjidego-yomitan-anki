@@ -1,8 +1,10 @@
 pages/
 dist/
 export/*.zip
+export/*.apkg
 images/
 processed/
+fonts/
 
 # Created by https://www.toptal.com/developers/gitignore/api/node
 # Edit at https://www.toptal.com/developers/gitignore?templates=node

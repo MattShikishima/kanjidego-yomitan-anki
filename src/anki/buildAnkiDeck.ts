@@ -10,43 +10,54 @@ import {
   IMAGE_NAME,
   KANJI_DE_GO_NAME,
 } from '../constants';
+import { buildApkg } from './buildApkg';
 
 export async function buildAnkiDeck(termDataArr: TermData[]) {
+  const records = getDedupedRecords(termDataArr);
+
   console.log('Building Anki deck');
+  await writeCsv(records);
+  await buildApkg(records);
+}
 
+const CSV_HEADER = [
+  { id: '単語', title: '単語' },
+  { id: '元単語', title: '元単語' },
+  { id: '問題ID', title: '問題ID' },
+  { id: '読み方', title: '読み方' },
+  { id: '別解', title: '別解' },
+  { id: '別表記', title: '別表記' },
+  { id: '意味', title: '意味' },
+  { id: '追記', title: '追記' },
+  { id: '典拠', title: '典拠' },
+  { id: '典拠リンク', title: '典拠リンク' },
+  { id: 'レベル', title: 'レベル' },
+  { id: '画像', title: '画像' },
+  { id: '切り抜き画像', title: '切り抜き画像' },
+  { id: 'Tags', title: 'Tags' },
+];
+
+async function writeCsv(records: CsvRecord[]) {
   const csvPath = path.join(process.cwd(), EXPORT_DIRECTORY, 'ankiDeck.csv');
-
   console.log('Writing to csv:', csvPath);
 
-  const csvWriter = createObjectCsvWriter({
-    path: csvPath,
-    header: [
-      { id: '単語', title: '単語' },
-      { id: '元単語', title: '元単語' },
-      { id: '問題ID', title: '問題ID' },
-      { id: '読み方', title: '読み方' },
-      { id: '別解', title: '別解' },
-      { id: '別表記', title: '別表記' },
-      { id: '意味', title: '意味' },
-      { id: '追記', title: '追記' },
-      { id: '典拠', title: '典拠' },
-      { id: '典拠リンク', title: '典拠リンク' },
-      { id: 'レベル', title: 'レベル' },
-      { id: '画像', title: '画像' },
-      { id: '切り抜き画像', title: '切り抜き画像' },
-      { id: 'Tags', title: 'Tags' },
-    ],
-  });
-  const records: CsvRecord[] = [];
+  const csvWriter = createObjectCsvWriter({ path: csvPath, header: CSV_HEADER });
+  await csvWriter.writeRecords(records);
+}
 
+/**
+ * Builds one deduplicated record per unique (単語, 読み方) pair — a main-form
+ * record per term plus one per alt spelling (別表記) — in the shape both the
+ * CSV and the .apkg builder consume.
+ */
+export function getDedupedRecords(termDataArr: TermData[]): CsvRecord[] {
+  const records: CsvRecord[] = [];
   for (const termData of termDataArr) {
     records.push(...getRecordsForTerm(termData));
   }
 
   // 単語:読み方 as key, list of Record as value
   const recordsMap = new Map<string, CsvRecord[]>();
-
-  // Add all records
   for (const record of records) {
     const { 単語, 読み方 } = record;
     const key = `${単語}:${読み方}`;
@@ -57,12 +68,11 @@ export async function buildAnkiDeck(termDataArr: TermData[]) {
     }
   }
 
-  // Remove duplicates
+  const dedupedRecords: CsvRecord[] = [];
   for (const [, recordList] of recordsMap) {
-    // Find the best one
-    const bestRecord = getBestRecord(recordList);
-    await csvWriter.writeRecords([bestRecord]);
+    dedupedRecords.push(getBestRecord(recordList));
   }
+  return dedupedRecords;
 }
 
 function getBestRecord(records: CsvRecord[]): CsvRecord {

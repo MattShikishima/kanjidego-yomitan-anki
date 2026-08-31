@@ -60,6 +60,21 @@ export const EXPORT_DIRECTORY = '/export';
 export const IMAGE_NAME = (ID: string) => `${ID}.png`;
 export const CROPPED_IMAGE_NAME = (ID: string) => `${ID}_cropped.png`;
 
+// Jigmo (CC0) covers CJK Unified Ideographs far beyond what any mainstream
+// font ships, which is exactly what this deck's rare kanji need. Bundled into
+// the .apkg so the rare characters render even on devices with no matching
+// system font; downloaded once and cached locally rather than committed,
+// since the fonts alone are ~65MB.
+export const FONTS_DIRECTORY = '/fonts';
+export const JIGMO_RELEASE_URL =
+  'https://kamichikoichi.github.io/jigmo/Jigmo-20250912.zip';
+// [zip entry name, media filename embedded in the .apkg]. Jigmo3 (TIP-plane
+// Ext.G/H/J) is skipped — none of this deck's characters fall that far out.
+export const JIGMO_FONTS: [string, string][] = [
+  ['Jigmo.ttf', '__Jigmo.ttf'],
+  ['Jigmo2.ttf', '__Jigmo2.ttf'],
+];
+
 export const JSON_FILE_NAME = 'termData.json';
 // Alternate spellings (別表記) carried over from the old Anki deck, matched by
 // spelling + reading, to supplement the sparser 別表記 on the new wiki.
@@ -68,6 +83,41 @@ export const LEGACY_BETSUHYOKI_FILE = 'src/data/legacyBetsuhyoki.json';
 // turns a term into a duplicate), keyed by 問題ID. See src/scrape/wikiOverrides.ts.
 export const WIKI_OVERRIDES_FILE = 'src/data/wikiOverrides.json';
 export const KANJI_DE_GO_NAME = '漢字でGO!';
+
+// .apkg note type: one field per CSV column (see CsvRecord), minus Tags (Anki
+// tracks tags separately from fields).
+export const APKG_FILE_NAME = '漢字でGO!.apkg';
+export const APKG_NOTE_TYPE_NAME = KANJI_DE_GO_NAME;
+export const APKG_TEMPLATE_NAME = 'カード 1';
+export const APKG_FRONT_TEMPLATE_FILE = 'src/anki/frontside.html';
+export const APKG_BACK_TEMPLATE_FILE = 'src/anki/backside.html';
+export const APKG_STYLING_FILE = 'src/anki/styling.css';
+export const APKG_FIELD_NAMES = [
+  '単語',
+  '元単語',
+  '問題ID',
+  '読み方',
+  '別解',
+  '別表記',
+  '意味',
+  '追記',
+  '典拠',
+  '典拠リンク',
+  'レベル',
+  '画像',
+  '切り抜き画像',
+] as const;
+
+// Deck hierarchy: one subdeck per level, plus a single subdeck holding every
+// 別表記 (alt spelling) card regardless of level.
+export const APKG_LEVEL_DECK_NAMES: { [level: string]: string } = {
+  '04': 'Lv.4',
+  '05': 'Lv.5',
+  '06': 'Lv.6',
+  '07': 'Lv.7',
+  '08': 'Lv.8',
+};
+export const APKG_ALT_FORM_DECK_NAME = '別表記';
 
 // Used as the term (headword) when a card has no representable character and no
 // IDS to describe it — Anki's first field cannot be empty.

@@ -17,7 +17,9 @@
     "cli-progress": "^3.12.0",
     "csv-writer": "^1.6.0",
     "jsdom": "^24.0.0",
+    "jszip": "^3.10.1",
     "sharp": "^0.33.2",
+    "sql.js": "^1.14.2",
     "typescript": "^5.3.3",
     "yargs": "^17.7.2",
     "yomichan-dict-builder": "^2.5.0"
@@ -26,6 +28,7 @@
     "@types/cli-progress": "^3.11.5",
     "@types/jsdom": "^21.1.6",
     "@types/node": "^20.11.24",
+    "@types/sql.js": "^1.4.11",
     "@types/yargs": "^17.0.32",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
