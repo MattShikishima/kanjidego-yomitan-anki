@@ -44,7 +44,13 @@ export async function buildApkg(records: CsvRecord[]): Promise<void> {
   createSchema(db);
 
   const nowSeconds = Math.floor(Date.now() / 1000);
-  const crt = nowSeconds - (nowSeconds % 86400);
+  // Anki's day-boundary stats (new-cards-today, review heatmap) are computed
+  // relative to this. There's no way to know the importing user's timezone at
+  // build time, so this just aligns to this machine's local midnight — the
+  // same inherent limitation every apkg-building tool (e.g. genanki) has.
+  const localMidnight = new Date();
+  localMidnight.setHours(0, 0, 0, 0);
+  const crt = Math.floor(localMidnight.getTime() / 1000);
 
   const modelId = nextId();
   const deckIds = createDecks();
@@ -152,10 +158,11 @@ type DeckIds = {
 /**
  * Creates the deck hierarchy: "Default" (id 1, required by convention, kept
  * empty), the "漢字でGO!" root, one child per level, and the 別表記 child.
+ * id 1 is reserved for "Default" by convention; idCounter is always far above
+ * 1 (seeded from Date.now(), already used once for modelId), so nextId()
+ * never needs to be told to skip it.
  */
 function createDecks(): DeckIds {
-  // id 1 is reserved for "Default" — every Anki collection has one.
-  idCounter = Math.max(idCounter, 2);
   const byLevel: { [level: string]: number } = {};
   for (const level of Object.keys(APKG_LEVEL_DECK_NAMES)) {
     byLevel[level] = nextId();
@@ -324,24 +331,24 @@ function insertCol(
   ]);
 }
 
-/** Collects media referenced during note insertion, keyed by content hash so
- * identical files (e.g. an image shared by a term and its 別表記 cards) are
- * only stored once. */
+/** Collects media referenced during note insertion, keyed by filename (Anki's
+ * media manifest is itself filename-keyed) so a file referenced by many
+ * records — e.g. an image shared by a term and its 別表記 cards — is only
+ * stored once. */
 class MediaCollector {
-  private byHash = new Map<string, { index: number; name: string; data: Buffer }>();
-  private nameToHash = new Map<string, string>();
+  private byName = new Map<string, { index: number; name: string; data: Buffer }>();
+
+  has(name: string): boolean {
+    return this.byName.has(name);
+  }
 
   addFile(name: string, data: Buffer): void {
-    if (this.nameToHash.has(name)) return;
-    const hash = crypto.createHash('sha1').update(data).digest('hex');
-    if (!this.byHash.has(hash)) {
-      this.byHash.set(hash, { index: this.byHash.size, name, data });
-    }
-    this.nameToHash.set(name, hash);
+    if (this.byName.has(name)) return;
+    this.byName.set(name, { index: this.byName.size, name, data });
   }
 
   get entries(): { index: number; name: string; data: Buffer }[] {
-    return [...this.byHash.values()];
+    return [...this.byName.values()];
   }
 }
 
@@ -361,7 +368,7 @@ function insertNotesAndCards(
     const sortField = record.単語;
     const guid = crypto
       .createHash('sha1')
-      .update(`${record.問題ID ?? ''}::${record.単語}`)
+      .update(`${record.問題ID ?? ''}::${record.単語}::${record.読み方}`)
       .digest('base64')
       .replace(/[^a-zA-Z0-9]/g, '')
       .slice(0, 10);
@@ -385,9 +392,19 @@ function insertNotesAndCards(
       csum,
     ]);
 
-    const did = record.元単語
-      ? deckIds.altForm
-      : deckIds.byLevel[record.レベル];
+    let did: number;
+    if (record.元単語) {
+      did = deckIds.altForm;
+    } else {
+      const levelDeckId = deckIds.byLevel[record.レベル];
+      if (levelDeckId === undefined) {
+        throw new Error(
+          `No .apkg subdeck for level "${record.レベル}" (問題ID ${record.問題ID}, ` +
+            `term ${record.単語}) — add it to APKG_LEVEL_DECK_NAMES/WIKI_PAGES.`
+        );
+      }
+      did = levelDeckId;
+    }
 
     const cardId = nextId();
     db.run(
@@ -396,20 +413,18 @@ function insertNotesAndCards(
     );
     due++;
 
-    for (const field of [record.画像, record.切り抜き画像]) {
+    for (const [field, dir] of [
+      [record.画像, IMAGES_DIRECTORY],
+      [record.切り抜き画像, CROPPED_IMG_DIR],
+    ] as const) {
       const match = field?.match(IMG_SRC_RE);
       if (!match) continue;
       const fileName = match[1];
-      const filePath = resolveImagePath(fileName);
-      if (filePath) media.addFile(fileName, fs.readFileSync(filePath));
+      if (media.has(fileName)) continue;
+      const filePath = path.join(process.cwd(), dir, fileName);
+      if (fs.existsSync(filePath)) media.addFile(fileName, fs.readFileSync(filePath));
     }
   }
-}
-
-function resolveImagePath(fileName: string): string | null {
-  const dir = fileName.includes('_cropped') ? CROPPED_IMG_DIR : IMAGES_DIRECTORY;
-  const filePath = path.join(process.cwd(), dir, fileName);
-  return fs.existsSync(filePath) ? filePath : null;
 }
 
 async function writeApkg(

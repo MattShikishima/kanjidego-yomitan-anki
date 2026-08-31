@@ -109,14 +109,15 @@ export const APKG_FIELD_NAMES = [
 ] as const;
 
 // Deck hierarchy: one subdeck per level, plus a single subdeck holding every
-// 別表記 (alt spelling) card regardless of level.
-export const APKG_LEVEL_DECK_NAMES: { [level: string]: string } = {
-  '04': 'Lv.4',
-  '05': 'Lv.5',
-  '06': 'Lv.6',
-  '07': 'Lv.7',
-  '08': 'Lv.8',
-};
+// 別表記 (alt spelling) card regardless of level. Derived from WIKI_PAGES
+// (rather than a separately hand-maintained map) so a new level added there
+// automatically gets a matching subdeck instead of crashing the .apkg build.
+export const APKG_LEVEL_DECK_NAMES: { [level: string]: string } = Object.keys(
+  WIKI_PAGES
+).reduce((acc: { [level: string]: string }, level) => {
+  acc[level] = `Lv.${parseInt(level, 10)}`;
+  return acc;
+}, {});
 export const APKG_ALT_FORM_DECK_NAME = '別表記';
 
 // Used as the term (headword) when a card has no representable character and no

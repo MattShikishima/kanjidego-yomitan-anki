@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP&display=swap');
 .card {
   font-family: 'Noto Serif JP', 'MS PMincho', 'BIZ UDPMincho', 'Jigmo',
-    'Jigmo2', serif, 'Noto Sans JP';
+    'Jigmo2', serif;
   color: black;
   background-color: white;
   max-width: 850px;
@@ -16,7 +16,7 @@
 }
 
 .rarefont {
-  font-family: 'Jigmo', 'Jigmo2', 'Noto Serif JP', 'Noto Sans JP', serif;
+  font-family: 'Jigmo', 'Jigmo2', 'Noto Serif JP', serif;
 }
 
 /* General table styles */
@@ -78,9 +78,4 @@ th {
   font-family: 'Jigmo2';
   font-display: swap;
   src: url('__Jigmo2.ttf');
-}
-@font-face {
-  font-family: 'Noto Sans JP';
-  font-display: swap;
-  src: url('__NotoSansJP-Regular.ttf');
 }

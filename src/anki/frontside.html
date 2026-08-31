@@ -58,11 +58,14 @@
     "
   >
     {{^元単語}}
-    <!-- Show image if not alt form: cropped by default, full image on hover -->
+    <!-- Show image if not alt form. 画像 (full image — question plus any hints
+    or disambiguation) by default; 切り抜き画像 (a crop of 画像 with the hints/
+    disambiguation removed, question only) on hover, kept only so people who
+    prefer the old default can swap back to it. -->
     <div id="quiz-image" style="display: inline-flex; position: relative">
-      {{切り抜き画像}}
+      {{画像}}
     </div>
-    <div id="quiz-image-full" style="display: none">{{画像}}</div>
+    <div id="quiz-image-hint" style="display: none">{{切り抜き画像}}</div>
 
     <!-- Main form hid on front by default -->
     <div id="main-form" style="display: none; font-size: 2em; color: gray">
@@ -143,20 +146,20 @@
     }, duration);
   }
 
-  // Size the quiz image (from the 切り抜き画像 field) and swap to the full image
-  // (the 画像 field) on hover.
+  // Size the quiz image (from the 画像 field) and swap to the cropped
+  // image (the 切り抜き画像 field) on hover.
   (() => {
     const quizImage = document.getElementById('quiz-image');
-    const cropped = quizImage && quizImage.querySelector('img');
-    if (!cropped) return;
-    cropped.style.height = '3.5em';
-    cropped.style.objectFit = 'contain';
-    const fullHolder = document.getElementById('quiz-image-full');
-    const full = fullHolder && fullHolder.querySelector('img');
+    const full = quizImage && quizImage.querySelector('img');
     if (!full) return;
-    const croppedSrc = cropped.getAttribute('src');
+    full.style.height = '3.5em';
+    full.style.objectFit = 'contain';
+    const hintHolder = document.getElementById('quiz-image-hint');
+    const hint = hintHolder && hintHolder.querySelector('img');
+    if (!hint) return;
     const fullSrc = full.getAttribute('src');
-    cropped.addEventListener('mouseover', () => cropped.setAttribute('src', fullSrc));
-    cropped.addEventListener('mouseout', () => cropped.setAttribute('src', croppedSrc));
+    const hintSrc = hint.getAttribute('src');
+    full.addEventListener('mouseover', () => full.setAttribute('src', hintSrc));
+    full.addEventListener('mouseout', () => full.setAttribute('src', fullSrc));
   })();
 </script>
