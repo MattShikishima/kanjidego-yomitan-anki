@@ -52,6 +52,16 @@ npm run makeAnki      # build the Anki deck CSV + .apkg
 Output is written to `export/`. The first `makeAnki` run downloads the Jigmo
 fonts (~65MB, cached under `fonts/`) for the `.apkg`.
 
+## Updating an existing deck without losing progress
+
+`scripts/realign_anki_guids.py` realigns its
+notes' guids against a fresh build so reimporting updates cards in place
+instead of duplicating them, without touching scheduling.
+```sh
+pip install anki
+python3 scripts/realign_anki_guids.py <exported-deck.apkg> <output.apkg> [current-build.apkg]
+```
+
 ## Downloads
 
 https://github.com/MattShikishima/kanjidego-yomitan-anki/releases

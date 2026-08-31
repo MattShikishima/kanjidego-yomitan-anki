@@ -6,9 +6,9 @@ import {
   CROPPED_IMAGE_NAME,
   CROPPED_IMG_DIR,
   EXPORT_DIRECTORY,
-  IMAGES_DIRECTORY,
   IMAGE_NAME,
   KANJI_DE_GO_NAME,
+  TRIMMED_DIRECTORY,
 } from '../constants';
 import { buildApkg } from './buildApkg';
 
@@ -144,7 +144,7 @@ function getRecordsForTerm(termData: TermData) {
     典拠: termReference?.text || '',
     典拠リンク: termReference?.url || '',
     レベル: level,
-    画像: imageTag(問題ID, IMAGES_DIRECTORY, IMAGE_NAME),
+    画像: imageTag(問題ID, TRIMMED_DIRECTORY, IMAGE_NAME),
     切り抜き画像: imageTag(問題ID, CROPPED_IMG_DIR, CROPPED_IMAGE_NAME),
     Tags: tags,
   };

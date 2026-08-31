@@ -16,8 +16,8 @@ import {
   APKG_TEMPLATE_NAME,
   CROPPED_IMG_DIR,
   EXPORT_DIRECTORY,
-  IMAGES_DIRECTORY,
   KANJI_DE_GO_NAME,
+  TRIMMED_DIRECTORY,
 } from '../constants';
 import { ensureJigmoFonts } from './fonts';
 
@@ -414,7 +414,7 @@ function insertNotesAndCards(
     due++;
 
     for (const [field, dir] of [
-      [record.画像, IMAGES_DIRECTORY],
+      [record.画像, TRIMMED_DIRECTORY],
       [record.切り抜き画像, CROPPED_IMG_DIR],
     ] as const) {
       const match = field?.match(IMG_SRC_RE);
