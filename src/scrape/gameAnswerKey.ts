@@ -10,7 +10,7 @@ import { normalizeWhitespace } from '../util/textUtils';
  * disguised extension (img/battlebacks2/LvNN.xcf). Each problem is a block of
  * `key:value` lines separated by a row of dashes; 問題 is the 問題ID and
  * 文上/文下 are the two display lines of the meaning. Wiki editors copy the
- * meaning by hand, so roughly a fifth of wiki meanings carry transcription
+ * meaning by hand, so about 18% of wiki meanings carry transcription
  * slips; the game's text is used instead, with the wiki's own additions (the
  * readings it puts after hard words, and trailing ※ notes) carried over.
  *

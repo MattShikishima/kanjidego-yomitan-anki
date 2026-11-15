@@ -33,7 +33,7 @@ README only covers what this fork changes.
 - **Wiki error corrections.** A small set of known wiki mistakes (mislabelled or
   misspelled entries) are patched via an overrides file.
 - **意味 from the game itself.** Meanings come from the game's own answer key
-  instead of the wiki's hand-copied text, about a fifth of which has
+  instead of the wiki's hand-copied text, about 18% of which has
   transcription slips. The readings and ※ notes the wiki editors add are
   carried over. The 50 problems the game data doesn't have yet keep the wiki's
   text.
