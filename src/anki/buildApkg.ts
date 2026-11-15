@@ -11,6 +11,7 @@ import {
   APKG_FILE_NAME,
   APKG_FRONT_TEMPLATE_FILE,
   APKG_LEVEL_DECK_NAMES,
+  APKG_MODEL_ID,
   APKG_NOTE_TYPE_NAME,
   APKG_STYLING_FILE,
   APKG_TEMPLATE_NAME,
@@ -22,7 +23,8 @@ import {
 import { ensureJigmoFonts } from './fonts';
 
 // A single monotonic counter (seeded from the current time) supplies every id
-// this module hands out — note ids, card ids, deck ids, the model id. Ids only
+// this module hands out — note ids, card ids, deck ids — except the model id,
+// which is fixed (APKG_MODEL_ID) so re-imports update notes in place. Ids only
 // need to be unique within their own table, but drawing them all from one
 // counter trivially guarantees that without tracking each table separately.
 let idCounter = Date.now();
@@ -52,7 +54,7 @@ export async function buildApkg(records: CsvRecord[]): Promise<void> {
   localMidnight.setHours(0, 0, 0, 0);
   const crt = Math.floor(localMidnight.getTime() / 1000);
 
-  const modelId = nextId();
+  const modelId = APKG_MODEL_ID;
   const deckIds = createDecks();
 
   const model = buildModel(modelId, deckIds.root);
@@ -159,7 +161,7 @@ type DeckIds = {
  * Creates the deck hierarchy: "Default" (id 1, required by convention, kept
  * empty), the "漢字でGO!" root, one child per level, and the 別表記 child.
  * id 1 is reserved for "Default" by convention; idCounter is always far above
- * 1 (seeded from Date.now(), already used once for modelId), so nextId()
+ * 1 (seeded from Date.now()), so nextId()
  * never needs to be told to skip it.
  */
 function createDecks(): DeckIds {

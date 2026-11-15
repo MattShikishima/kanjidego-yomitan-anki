@@ -93,12 +93,21 @@ def load_notes(apkg_path: Path, work_dir: Path):
             ),
         )
     )
-    mid = next(
-        (nt.id for nt in col.models.all_names_and_ids() if nt.name == NOTETYPE_NAME),
-        None,
-    )
-    if mid is None:
+    # Anki renames an imported note type to "漢字でGO!+", "漢字でGO!++", … when
+    # the name is already taken, so accept those too (exact name preferred).
+    candidates = [
+        nt for nt in col.models.all_names_and_ids()
+        if nt.name.rstrip('+') == NOTETYPE_NAME
+    ]
+    exact = [nt for nt in candidates if nt.name == NOTETYPE_NAME]
+    if exact:
+        candidates = exact
+    if not candidates:
         raise RuntimeError(f'No "{NOTETYPE_NAME}" notetype found in {apkg_path}')
+    if len(candidates) > 1:
+        names = ', '.join(f'"{nt.name}"' for nt in candidates)
+        raise RuntimeError(f'Several {NOTETYPE_NAME} notetypes in {apkg_path}: {names}')
+    mid = candidates[0].id
     notes = []
     for note_id, guid, flds in col.db.execute(
         'select id, guid, flds from notes where mid = ?', mid

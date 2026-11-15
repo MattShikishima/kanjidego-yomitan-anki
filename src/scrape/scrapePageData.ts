@@ -18,12 +18,15 @@ import {
   applyInfoOverride,
   getWikiOverride,
 } from './wikiOverrides';
+import { GameMeanings, chooseMeaning, loadGameMeanings } from './gameAnswerKey';
 
 export async function scrapeAllPagesData() {
   const termDataArr: TermData[] = [];
+  const gameMeanings = await loadGameMeanings(Object.keys(WIKI_PAGES));
+  console.log(`Loaded ${gameMeanings.size} meanings from the game's answer key`);
   for (const level of Object.keys(WIKI_PAGES)) {
     for (const pageUrl of WIKI_PAGES[level]) {
-      const data = await scrapePageData(pageUrl, level);
+      const data = await scrapePageData(pageUrl, level, gameMeanings);
       termDataArr.push(...data);
     }
   }
@@ -49,7 +52,11 @@ export async function scrapeAllPagesData() {
  * by the reading, then a <div> containing the term's image and its
  * テキスト/意味/別読み/別表記/補足/元作品/典拠 fields.
  */
-export async function scrapePageData(pageUrl: string, level: string) {
+export async function scrapePageData(
+  pageUrl: string,
+  level: string,
+  gameMeanings?: GameMeanings
+) {
   const document = await getPageDocument(pageUrl);
   const wikibody = document.querySelector('#wikibody');
   if (!wikibody) {
@@ -104,6 +111,12 @@ export async function scrapePageData(pageUrl: string, level: string) {
       term,
       problemId
     );
+    // Prefer the game's own wording of the meaning over the wiki's hand-copied
+    // one. Entries whose wiki 意味 is empty (the literature problems, which give
+    // a 元作品 quote instead) are left as they are.
+    if (termInfo.意味) {
+      termInfo.意味 = chooseMeaning(gameMeanings?.get(problemId), termInfo.意味);
+    }
     if (override) {
       applyInfoOverride(termInfo, override);
     }

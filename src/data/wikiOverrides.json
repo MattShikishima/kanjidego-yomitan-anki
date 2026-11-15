@@ -7,50 +7,148 @@
     "意味": "日本で最初に流通したとされる銭貨。皇朝十二銭の最初に位置づけられるもの。"
   },
   "Lv04_0030": {
-    "note": "Wiki mislabels this as 和同開珎 (correct at Lv04_0029); the game image is 魏志倭人伝, which is otherwise missing. 読み方/意味 supplied by hand — verify against the game.",
+    "note": "Wiki mislabels this as 和同開珎 (correct at Lv04_0029); the game image is 魏志倭人伝, which is otherwise missing. 読み方 and 意味 are from the game's answer key.",
     "term": "魏志倭人伝",
     "reading": "ぎしわじんでん",
     "別解": [],
-    "意味": "中国の歴史書『三国志』魏書東夷伝倭人条の通称。3世紀頃の倭（日本）について記した現存最古の記録とされる。"
+    "意味": "『魏志』の中で、日本列島の人々について記された部分の通称。"
   },
   "Lv04_0091": {
     "note": "テキスト misspells 雛芥子 as 雛罌粟 (the real 雛罌粟 is Lv05_0391), making it a duplicate.",
     "term": "雛芥子"
   },
+  "Lv04_0095": {
+    "note": "Wiki 読み方 for 蔦屋重三郎 is つたやじゅうさぶろう; the game's answer key has つたやじゅうざぶろう.",
+    "reading": "つたやじゅうざぶろう"
+  },
+  "Lv04_0393": {
+    "note": "The game's 意味 has ギサギサ, a typo for ギザギザ; the wiki has it right.",
+    "意味": "杉の大径木にみられ、笹の葉が折り重なったような先の尖ったギザギザ模様の木目。"
+  },
+  "Lv04_0406": {
+    "note": "Wiki 読み方 for 松柏の操 is しゃうはくのみさお; the game's answer key has しょうはくのみさお.",
+    "reading": "しょうはくのみさお"
+  },
+  "Lv04_0555": {
+    "note": "Wiki 読み方 for 天の逆鉾 is あまのさかほこ; the game's answer key has あめのさかほこ.",
+    "reading": "あめのさかほこ"
+  },
+  "Lv04_0869": {
+    "note": "Wiki 読み方 for 有卦に入る is うけにはいる; the game's answer key has うけにいる.",
+    "reading": "うけにいる"
+  },
+  "Lv04_1285": {
+    "note": "Wiki 読み方 for 箝口令を敷く is かんこうれい; the game's answer key has かんこうれいをしく.",
+    "reading": "かんこうれいをしく"
+  },
   "Lv04_1434": {
-    "note": "Wiki 読み方 for 怒濤の is とどうの; the correct reading is どとうの.",
+    "note": "Wiki 読み方 for 怒濤の is とどうの; the game's answer key has どとうの.",
     "reading": "どとうの"
+  },
+  "Lv05_0190": {
+    "note": "Wiki 読み方 for 鄒魯の学 is すうろうのがく; the game's answer key has すうろのがく.",
+    "reading": "すうろのがく"
   },
   "Lv05_0262": {
     "note": "テキスト misspells 拳螺 as 栄螺 (the real 栄螺 is Lv05_0302), making it a duplicate.",
     "term": "拳螺"
+  },
+  "Lv05_0289": {
+    "note": "The game's 意味 swaps the taxonomy (ブッポウソウ科カワセミ目); it is ブッポウソウ目カワセミ科, as in the game's own Lv05_0005.",
+    "意味": "ブッポウソウ目カワセミ科の小鳥。水辺に生息し、小魚を捕らえる。"
+  },
+  "Lv05_0379": {
+    "note": "The game's 意味 has 鑑賞用の植物; plants are 観賞用, as the wiki has it.",
+    "意味": "観賞用の植物を栽培すること。"
   },
   "Lv05_0429": {
     "note": "テキスト misspells 通草 as 木通 (the real 木通 is Lv05_0202), making it a duplicate.",
     "term": "通草"
   },
   "Lv05_0638": {
-    "note": "Wiki 読み方 for 牙籌を執る is がとうをとる; the correct reading is がちゅうをとる.",
+    "note": "Wiki 読み方 for 牙籌を執る is がとうをとる; the game's answer key has がちゅうをとる.",
     "reading": "がちゅうをとる"
   },
   "Lv05_0662": {
-    "note": "Wiki 読み方 for 均霑化 is きんていか; the correct reading is きんてんか.",
+    "note": "Wiki 読み方 for 均霑化 is きんていか; the game's answer key has きんてんか.",
     "reading": "きんてんか"
   },
+  "Lv05_0805": {
+    "note": "Wiki 読み方 for 帙み is ふみつづみ; the game's answer key has ふみづつみ.",
+    "reading": "ふみづつみ"
+  },
+  "Lv05_0858": {
+    "note": "The game's 意味 has 扇形動物, a typo for 扁形動物 (flatworms); the wiki has it right.",
+    "意味": "三岐腸目リクウズムシ科の扁形動物の総称。"
+  },
+  "Lv05_1104": {
+    "note": "Wiki 読み方 for 鹵う is さらう; the game's answer key has うばう.",
+    "reading": "うばう"
+  },
+  "Lv05_1154": {
+    "note": "Wiki 読み方 for 彽る is たいもとおる; the game's answer key has たちもとおる.",
+    "reading": "たちもとおる"
+  },
   "Lv05_1262": {
-    "note": "Wiki 読み方 for 希求 is けぐ; the correct reading is けく.",
-    "reading": "けく"
+    "note": "Wiki 読み方 for 希求 is けぐ; the game's answer key has けく, and also accepts けぐ (kept as 別解).",
+    "reading": "けく",
+    "別解": ["けぐ"]
+  },
+  "Lv05_1616": {
+    "note": "Wiki 読み方 for 阿弥陀籤 is あみだぐじ; the game's answer key has あみだくじ.",
+    "reading": "あみだくじ"
+  },
+  "Lv05_1916": {
+    "note": "Wiki 読み方 for 抽薹 is ちょうだい; the game's answer key has ちゅうだい.",
+    "reading": "ちゅうだい"
+  },
+  "Lv06_0084": {
+    "note": "Wiki 読み方 for 須陀洹 is しゃだおん; the game's answer key has しゅだおん.",
+    "reading": "しゅだおん"
   },
   "Lv06_0634": {
-    "note": "Wiki 読み方 for 葒草 is おおけだて; the correct reading is おおけたで.",
+    "note": "Wiki 読み方 for 葒草 is おおけだて; the game's answer key has おおけたで.",
     "reading": "おおけたで"
   },
-  "Lv06_0684": {
-    "note": "Wiki 読み方 for 刈杌 (headword; also written 加杭) is がくい; the correct reading is かくい.",
-    "reading": "かくい"
-  },
   "Lv06_0754": {
-    "note": "Wiki 読み方 for 磊那須両柱 is さざれいしなすのふたばしら; the correct reading is さざれいしなすのふたはしら.",
+    "note": "Wiki 読み方 for 磊那須両柱 is さざれいしなすのふたばしら; the game's answer key has さざれいしなすのふたはしら.",
     "reading": "さざれいしなすのふたはしら"
+  },
+  "Lv06_0871": {
+    "note": "Wiki 読み方 for 楓蔦黄 is もみずつたきばむ; the game's answer key has もみじつたきばむ.",
+    "reading": "もみじつたきばむ"
+  },
+  "Lv06_0943": {
+    "note": "Wiki 読み方 for 狩衣花眺頃 is かりごろもはなのころごろ; the game's answer key has かりごろもはなのこのごろ.",
+    "reading": "かりごろもはなのこのごろ"
+  },
+  "Lv06_0949": {
+    "note": "Wiki 読み方 for 海老鰭盥槽 is えびのはたぶね; the game's answer key has えびのはたふね.",
+    "reading": "えびのはたふね"
+  },
+  "Lv06_1206": {
+    "note": "Wiki 読み方 for 醜い is みぐるい; the game's answer key has みぐるしい. The game attributes this quote to 明るき世界へ／小川未明, but it isn't in that work (checked against the Aozora Bunko text); the wiki's 十二支考／南方熊楠 is kept.",
+    "reading": "みぐるしい",
+    "意味": "いかにも醜(みぐるし)いから必ず死ぬ態を人に見せぬと… 十二支考／南方熊楠(みなかたくまぐす) 著"
+  },
+  "Lv06_1416": {
+    "note": "Wiki 読み方 for 鸑鷟 is かくさく; the game's answer key has がくさく.",
+    "reading": "がくさく"
+  },
+  "Lv06_1424": {
+    "note": "Wiki 読み方 for 𮑱陶 is おおえびかづら; the game's answer key has おおえびかずら.",
+    "reading": "おおえびかずら"
+  },
+  "Lv07_0203": {
+    "note": "Wiki 読み方 for 睦月連理𢢫 is むつましづきれんりのたまつばき; the game's answer key has むつましずきれんりのたまつばき.",
+    "reading": "むつましずきれんりのたまつばき"
+  },
+  "Lv07_0343": {
+    "note": "Keeps the wiki editors' note 厥の異体字, which the game's 意味 doesn't have.",
+    "意味": "相手から遠くではない位置にあることを表す語。 厥の異体字。"
+  },
+  "Lv07_0539": {
+    "note": "The game's 意味 drops the を in 『天』を意味する字.",
+    "意味": "『天』を意味する字。一部の字典では、則天(そくてん)武后(ぶこう)が定めたことを記している。"
   }
 }

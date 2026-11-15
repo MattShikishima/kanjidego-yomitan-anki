@@ -49,8 +49,16 @@ export const WIKI_PAGES: {
 export const BROWSER_USER_AGENT =
   'Mozilla/5.0 (X11; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0';
 
+// The game's files on plicy. plicy ignores the version segment (655 here) and
+// always serves the current file, so it needn't track game updates.
+export const GAME_FILES_BASE_URL =
+  'https://html5.plicy.net/GameFilesUpdate/155561/655';
 export const KANJI_IMAGE_URL = (ID: string) =>
-  `https://html5.plicy.net/GameFilesUpdate/155561/234/img/pictures/${ID}.png`;
+  `${GAME_FILES_BASE_URL}/img/pictures/${ID}.png`;
+// The game's answer key (readings + meanings) for a level, as plain text
+// despite the extension. See src/scrape/gameAnswerKey.ts.
+export const GAME_ANSWER_KEY_URL = (level: string) =>
+  `${GAME_FILES_BASE_URL}/img/battlebacks2/Lv${level}.xcf`;
 
 export const PAGES_DIRECTORY = '/pages';
 export const IMAGES_DIRECTORY = '/images';
@@ -88,6 +96,13 @@ export const KANJI_DE_GO_NAME = '漢字でGO!';
 // tracks tags separately from fields).
 export const APKG_FILE_NAME = '漢字でGO!.apkg';
 export const APKG_NOTE_TYPE_NAME = KANJI_DE_GO_NAME;
+// Fixed note-type (model) id. Anki only updates an already-imported note in
+// place when both its guid and its note-type id match; a fresh id per build
+// makes every import add yet another copy of the note type (Anki renames it
+// 漢字でGO!+, 漢字でGO!++, …) and skip the existing notes as conflicting. This
+// is the id of the note type the deck was first imported with (2026-08-31
+// build), so rebuilt decks keep mapping onto it. Never change it.
+export const APKG_MODEL_ID = 1788176674970;
 export const APKG_TEMPLATE_NAME = 'カード 1';
 export const APKG_FRONT_TEMPLATE_FILE = 'src/anki/frontside.html';
 export const APKG_BACK_TEMPLATE_FILE = 'src/anki/backside.html';

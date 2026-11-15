@@ -32,10 +32,18 @@ README only covers what this fork changes.
   replaced with the IDS so distinct characters don't collapse into one entry.
 - **Wiki error corrections.** A small set of known wiki mistakes (mislabelled or
   misspelled entries) are patched via an overrides file.
+- **意味 from the game itself.** Meanings come from the game's own answer key
+  instead of the wiki's hand-copied text, about a fifth of which has
+  transcription slips. The readings and ※ notes the wiki editors add are
+  carried over. The 50 problems the game data doesn't have yet keep the wiki's
+  text.
 - **Direct .apkg build.** `npm run makeAnki` now builds a ready-to-import
   `.apkg` alongside the CSV, with notes split into per-level subdecks plus a
   single 別表記 subdeck for every alt-spelling card, matching the note type in
   `src/anki/`.
+- **Fixed note type ID.** The `.apkg` always uses the same note type ID
+  (`APKG_MODEL_ID`), so reimporting a new build updates existing notes in
+  place instead of adding a second copy of the note type.
 - **Jigmo instead of Simsun.** The card CSS pulled in Simsun/SimsunB (Microsoft-
   licensed fonts) as a rare-kanji fallback; the `.apkg` now embeds
   [Jigmo](https://kamichikoichi.github.io/jigmo/) instead — CC0, and built
@@ -54,13 +62,23 @@ fonts (~65MB, cached under `fonts/`) for the `.apkg`.
 
 ## Updating an existing deck without losing progress
 
-`scripts/realign_anki_guids.py` realigns its
-notes' guids against a fresh build so reimporting updates cards in place
-instead of duplicating them, without touching scheduling.
+Import the new `.apkg` with "Merge note types" left unchecked. Notes whose
+問題ID, 単語 and 読み方 haven't changed update in place. A note whose 単語 or
+読み方 was corrected gets a new guid and comes in as a new note next to the old
+one.
+
+`scripts/realign_anki_guids.py` realigns your notes' guids against a fresh
+build, so those notes update in place too, without touching scheduling.
 ```sh
 pip install anki
 python3 scripts/realign_anki_guids.py <exported-deck.apkg> <output.apkg> [current-build.apkg]
 ```
+
+## Upstream status
+
+[docs/upstream-status.md](docs/upstream-status.md) records the state of the
+wiki and the game's images as of the last check, and what changed. It also
+covers the game's own answer key and the wiki readings that disagree with it.
 
 ## Downloads
 
